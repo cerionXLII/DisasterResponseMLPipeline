@@ -25,12 +25,14 @@ from sklearn.model_selection  import GridSearchCV
 
 
 def LoadData(dataBasePath, databaseTableName):
+    '''Loads the data from the database. Returns a pandas dataframe.'''
     # load data from database
     engine = create_engine(dataBasePath)
     df = pd.read_sql(databaseTableName, engine)
     return df
 
 def PreprocessData(df):
+    '''Preprocesses a pandas dataframe. Outputs features X and targets Y.'''
     X = df['message']
     Y = df.drop(columns=['id', 'message','original', 'genre'])
     
@@ -50,12 +52,14 @@ def PreprocessData(df):
     return X, Y
 
 def tokenize(text):
+    '''This will take a text string and tokenize it. A list of clean tokens are returned.'''
     tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
     clean_tokens = [lemmatizer.lemmatize(x).lower().strip() for x in tokens]
     return clean_tokens
 
 def CreatePipeline():
+    '''This creates and returns a full pipeline object.'''
     pipeline = Pipeline([
             ('features', FeatureUnion([
                 ('text_pipeline', Pipeline([
@@ -73,6 +77,7 @@ def CreatePipeline():
     return pipeline
 
 def EvaluateModel(model, X_test, Y_test):
+    '''This takes a model as input, along with the X and Y test sets. It then evaluates the model and outputs some metrics.'''
     Y_pred = model.predict(X_test)
     
     total_hits = np.sum(np.sum(Y_pred == Y_test))
@@ -104,7 +109,7 @@ def EvaluateModel(model, X_test, Y_test):
     print(f'Average F1 Score: {np.average(f1scores)}')
     
 def main(modelName, dataBasePath, databaseTableName):    
-    
+    '''This runs the full train pipeline and writes a pickled model.'''
     #Load data
     print(f'Loading data from db: {dataBasePath} table: {databaseTableName}')
     df = LoadData(dataBasePath, databaseTableName)

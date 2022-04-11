@@ -11,6 +11,7 @@ databaseTableName = 'messagesDataTable'
 
 
 def LoadData(messagesPath, categoriesPath):
+    '''Loads the data from csv files. Returns a pandas dataframe.'''
     # load messages dataset
     messages = pd.read_csv(messagesPath)
     
@@ -23,6 +24,8 @@ def LoadData(messagesPath, categoriesPath):
     return df
     
 def PreprocessData(df):
+    '''Takes a pandas dataframe and preprocesses it. Output is a processed pandas dataframe.'''
+    
     # create a dataframe of the 36 individual category columns
     categories = df['categories'].str.split(';', expand=True)
     
@@ -62,11 +65,13 @@ def PreprocessData(df):
     return df
     
 def SaveToDatabase(df, dataBasePath, databaseTableName):
+    '''Saves a pandas dataframe to the database.'''
     engine = create_engine(dataBasePath)
     df.to_sql(databaseTableName, engine, index=False,if_exists='replace')
     
     
 def main(messagesPath, categoriesPath, dataBasePath, databaseTableName):
+    '''Runs the complete ETL pipeline'''
     print(f'Loading data. Messages: {messagesPath} Categories: {categoriesPath}')
     df = LoadData(messagesPath, categoriesPath)
     
@@ -91,10 +96,5 @@ if __name__ == "__main__":
 
     main(args.messagesPath, args.categoriesPath, args.dataBasePath, args.databaseTableName)
     
-    print('Program terminated...')  
-    
-    
-    
-    
-    
+    print('Program terminated...')      
     
