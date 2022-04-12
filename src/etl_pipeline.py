@@ -46,7 +46,7 @@ def PreprocessData(df):
             # convert column from string to numeric
             categories[column] = categories[column].astype('int32')
 
-        except exception as e:
+        except Exception as e:
             print(e)
         
     

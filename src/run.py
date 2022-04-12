@@ -8,7 +8,8 @@ from nltk.tokenize import word_tokenize
 from flask import Flask
 from flask import render_template, request, jsonify
 from plotly.graph_objs import Bar
-from sklearn.externals import joblib
+import joblib
+from sklearn.linear_model import SGDRegressor
 from sqlalchemy import create_engine
 
 
@@ -49,12 +50,15 @@ print(f'Model loaded: {modelName}')
 def index():
     
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
+
+    totalMessages = df.shape[0]
+    totalRequests = df['request'].sum()
+    totalOffers = df['offer'].sum()
+    requestOfferNames = ['Total Messages', 'Requests', 'Offers']
     
     # create visuals
-    # TODO: Below is an example - modify to create your own visuals
     graphs = [
         {
             'data': [
@@ -71,6 +75,24 @@ def index():
                 },
                 'xaxis': {
                     'title': "Genre"
+                }
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=requestOfferNames,
+                    y=[totalMessages, totalRequests, totalOffers]
+                )
+            ],
+
+            'layout': {
+                'title': 'Number Request/Offer Messages',
+                'yaxis': {
+                    'title': "Count"
+                },
+                'xaxis': {
+                    'title': "Message Kinds"
                 }
             }
         }
