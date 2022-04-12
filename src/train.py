@@ -74,7 +74,18 @@ def CreatePipeline():
                                                         alpha=1e-5, random_state=42,
                                                         max_iter=5, tol=None)
             ))])
-    return pipeline
+
+
+    #Create parameters to use during grid search
+    parameters = {    
+        'clf__estimator__loss': ['hinge', 'log', 'perceptron'],
+        'clf__estimator__alpha': [1e-3, 1e-4, 1e-5],
+        'clf__estimator__penalty': ['l1', 'l2'],
+    }
+
+    #Create a grid search object
+    cv = GridSearchCV(pipeline, param_grid=parameters, n_jobs=-1, verbose=2, scoring='f1_weighted')
+    return cv
 
 def EvaluateModel(model, X_test, Y_test):
     '''This takes a model as input, along with the X and Y test sets. It then evaluates the model and outputs some metrics.'''
